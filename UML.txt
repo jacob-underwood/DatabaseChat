@@ -24,9 +24,10 @@ classDiagram
 
     class DatabaseAccessor {
         -Connection c
-        +DatabaseAccessor(Connection c)
-        +getUser(int id) User
-        +getHistory(int id) ResultSet
+        -String table
+        +DatabaseAccessor(Connection c, String table)
+        +add(ArrayList<Object>) boolean
+        +delete(int id) boolean
     }
 
     DatabaseAccessor --> User
