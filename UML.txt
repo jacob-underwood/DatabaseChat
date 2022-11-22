@@ -1,20 +1,24 @@
 classDiagram
     class Authentication {
-        +login() void
-        +register() void
+        +login() User
+        +register() User
     }
 
     class MainView {
-        +createRoom() void
-        +joinRoom() void
-        +updateUser() void
-        +updatePass() void
+        +createRoom(String rName) void
+        +joinRoom(String rName) void
+        +updateUser(String name) void
+        +updatePass(String newPass) void
         +logout() void
     }
 
     class ChatRoom {
-        +parseCommand() void
-        +sendChat() void
+        +parseCommand(String cmd) void
+        +list() void
+        +leave() void
+        +history() void
+        +help() void
+        +sendChat(String msg) void
         +update() void
     }
 
@@ -26,7 +30,7 @@ classDiagram
         -Connection c
         -String table
         +DatabaseAccessor(Connection c, String table)
-        +add(ArrayList<Object>) boolean
+        +add(ArrayList~Object~ vals) boolean
         +delete(int id) boolean
     }
 
@@ -38,9 +42,11 @@ classDiagram
     class User {
         -int id
         -String username
-        -String pass
-        +User(int id, String username, String pass)
+        -String password
+        +User(int id, String username, String password)
         +getId() int
         +getUsername() String
-        +getPass() String
+        +setUsername(String username) void
+        +getPassword() String
+        +setPassword(String password) void
     }
