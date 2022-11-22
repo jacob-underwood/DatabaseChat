@@ -1,0 +1,46 @@
+classDiagram
+    class Authentication {
+        +login() void
+        +register() void
+    }
+
+    class MainView {
+        +createRoom() void
+        +joinRoom() void
+        +updateUser() void
+        +updatePass() void
+        +logout() void
+    }
+
+    class ChatRoom {
+        +parseCommand() void
+        +sendChat() void
+        +update() void
+    }
+
+    Authentication --> DatabaseAccessor
+    MainView --> DatabaseAccessor
+    ChatRoom --> DatabaseAccessor
+
+    class DatabaseAccessor {
+        -Connection c
+        -String table
+        +DatabaseAccessor(Connection c, String table)
+        +add(ArrayList<Object>) boolean
+        +delete(int id) boolean
+    }
+
+    DatabaseAccessor --> User
+    Authentication --> User
+    ChatRoom --> User
+    MainView --> User
+
+    class User {
+        -int id
+        -String username
+        -String pass
+        +User(int id, String username, String pass)
+        +getId() int
+        +getUsername() String
+        +getPass() String
+    }
