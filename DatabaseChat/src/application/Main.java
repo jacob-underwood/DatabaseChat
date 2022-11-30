@@ -12,7 +12,7 @@ public class Main {
 		// while loop -> MainView screen.
 		
 			// while loop -> ChatRoom screens.
-		
+
 	}
 	
 }
