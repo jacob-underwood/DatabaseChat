@@ -26,23 +26,23 @@ public class Authentication {
 	 * @return User taken from either register() or login() to be used in determining authentication in other screens.
 	 */
 	public User authScreen() {
-		User ret = null;
-		boolean bool = true;
+		User user = null;
+		boolean run = true;
 		System.out.print("Welcome to *generic chat app name*! Enter a command:\n - /register \n - /login");
-		while(bool) {
+		while(run) {
 			System.out.print("\n\n> ");
 			String s = scan.nextLine();
 			if(s.equals("/register")) {
-				ret = register();
-				bool = false;
+				user = register();
+				run = false;
 			} else if(s.equals("/login")) {
-				ret = login();
-				bool = false;
+				user = login();
+				run = false;
 			} else {
 				System.out.print("\nInvalid: Unknown Command.");
 			}
 		}
-		return ret;
+		return user;
 	}
 	
 	/**
@@ -53,10 +53,10 @@ public class Authentication {
 	 * @return User that mirrors database entry.
 	 */
 	public User login() {
-		User u = null;
-		boolean b = true;
+		User user = null;
+		boolean done = false;
 		int tempid = -1;
-		while(b) {
+		while(!done) {
 			boolean exists = false;
 			System.out.print("\nUsername: ");
 			String un = scan.nextLine();
@@ -75,10 +75,10 @@ public class Authentication {
 					String p = scan.nextLine();
 					Object[] names = db.get(tempid).toArray();
 					if(names[1].toString().equals(p)) {	
-						u = new User(keys.length, un, p);
+						user = new User(keys.length, un, p);
 						System.out.println("\nLogging you in...\n");
 						valid = true;
-						b = false;
+						done = true;
 					} else {
 						System.out.println("\nInvalid: Incorrect Password.\n");
 					}
@@ -87,7 +87,7 @@ public class Authentication {
 				System.out.print("\nInvalid: Username doesn't exist.\n");
 			}
 		}
-		return u;
+		return user;
 	}
 	
 	/**
@@ -98,10 +98,10 @@ public class Authentication {
 	 * @return User that mirrors database entry.
 	 */
 	public User register() {
-		User u = null;
-		boolean b = true;
+		User user = null;
+		boolean done = false;
 		System.out.println("\nRegistering new user...");
-		while(b) {
+		while(!done) {
 			boolean valid = true;
 			System.out.print("\nUsername: ");
 			String un = scan.nextLine();
@@ -122,14 +122,14 @@ public class Authentication {
 				al.add(un);
 				al.add(p);
 				db.add(al);
-				u = new User(keys.length, un, p);
+				user = new User(keys.length, un, p);
 				System.out.println("\nSuccessfully registered. Logging you in...\n");
-				b = false;
+				done = true;
 			} else {
 				System.out.print("\nInvalid: Username already taken.\n");
 			}
 		}
-		return u;
+		return user;
 	}
 
 }
