@@ -18,7 +18,7 @@ public class ChatRoom {
 	DatabaseAccessor roomInfoAccessor;
 	DatabaseAccessor historyAccessor;
 	Scanner input;
-	ArrayList<String> userList = new ArrayList<>();
+	ArrayList<Object> userList = new ArrayList<>();
 	
 	boolean leaving = false;
 	
@@ -32,7 +32,7 @@ public class ChatRoom {
 		historyAccessor = this.historyAccessor;
 		input = this.input;
 		
-		userList = roomInfoAccessor.get(roomId).get(2);
+		userList = roomInfoAccessor.get(2);
 		
 	}
 		
@@ -65,8 +65,8 @@ public class ChatRoom {
 		
 		System.out.println("Users in chatroom " + roomName + " : ");
 		
-		ArrayList<String> keys = roomInfoAccessor.getKeys();
-		userList = roomInfoAccessor.get(roomId).get(2);
+		ArrayList<Integer> keys = roomInfoAccessor.getKeys();
+		userList = roomInfoAccessor.get(2);
 		
 		for(int i = 0; i < userList.size(); i++)
 		{

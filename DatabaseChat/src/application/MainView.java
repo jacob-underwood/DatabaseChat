@@ -82,7 +82,7 @@ public class MainView {
 			name = input.nextLine();
 			taken = false;
 			
-			for(int i = 0; i < roomInfoAccessor.getKeys(); i++) {
+			for(int i = 0; i < roomInfoAccessor.getKeys().size(); i++) {
 				
 				if(roomInfoAccessor.get(i).get(1).equals(name)) {
 					
@@ -138,12 +138,14 @@ public class MainView {
 			System.out.println("Enter the name of the room or type /exit to return to Main View : ");
 			name = input.nextLine();
 			exists = false;
+			int index = 0;
 			
-			for(int i = 0; i < roomInfoAccessor.getKeys(); i++) {
+			for(int i = 0; i < roomInfoAccessor.getKeys().size(); i++) {
 				
 				if(roomInfoAccessor.get(i).get(1).equals(name)) {
 					
 					exists = true;
+					index = i;
 					
 				}
 				
@@ -156,9 +158,11 @@ public class MainView {
 			else { 
 				//valid room name! join room
 				valid = true;
+				ChatRoom room = new ChatRoom(user, name, index, 
+						roomInfoAccessor, historyAccessor, input);
 				System.out.println("Room " + name + " joined!");
 				String msg = "";
-				while(!room.leaving()) {
+				while(!leaving) {
 					
 					System.out.print(user.getUsername() + ": ");
 					msg = input.next();
@@ -192,7 +196,7 @@ public class MainView {
 			name = input.nextLine();
 			taken = false;
 			
-			for(int i = 0; i < roomInfoAccessor.getKeys(); i++) {
+			for(int i = 0; i < roomInfoAccessor.getKeys().size(); i++) {
 				
 				if(roomInfoAccessor.get(i).get(1).equals(name)) {
 					
