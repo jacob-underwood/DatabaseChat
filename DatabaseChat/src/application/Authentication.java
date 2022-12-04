@@ -1,41 +1,46 @@
 package application;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Provides a screen with a command-line interface that is displayed when opening a new chat application.
- * Checks for authentication of the user accessing the app, and creates a new User with database entry.
+ * Provides a screen with a command-line interface that is displayed when
+ * opening a new chat application. Checks for authentication of the user
+ * accessing the app, and creates a new User with database entry.
  */
 public class Authentication {
 	DatabaseAccessor db;
-	Scanner scan = new Scanner(System.in);
-	
-	
+	Scanner scan;
+
 	/**
 	 * Constructs the new Authentication screen. Assigns parameter to variable.
 	 * 
-	 * @param db DatabaseAccessor taken from main to be used in Authentication methods.
+	 * @param db   DatabaseAccessor taken from main to be used in Authentication
+	 *             methods.
+	 * @param scan Scanner to read inputs.
 	 */
-	public Authentication(DatabaseAccessor db) {
+	public Authentication(DatabaseAccessor db, Scanner scan) {
 		this.db = db;
+		this.scan = scan;
 	}
-	
+
 	/**
 	 * Initial screen that calls either register() or login() screens.
 	 * 
-	 * @return User taken from either register() or login() to be used in determining authentication in other screens.
+	 * @return User taken from either register() or login() to be used in
+	 *         determining authentication in other screens.
 	 */
 	public User authScreen() {
 		User user = null;
 		boolean run = true;
 		System.out.print("Welcome to *generic chat app name*! Enter a command:\n - /register \n - /login");
-		while(run) {
+		while (run) {
 			System.out.print("\n\n> ");
 			String s = scan.nextLine();
-			if(s.equals("/register")) {
+			if (s.equals("/register")) {
 				user = register();
 				run = false;
-			} else if(s.equals("/login")) {
+			} else if (s.equals("/login")) {
 				user = login();
 				run = false;
 			} else {
@@ -44,11 +49,11 @@ public class Authentication {
 		}
 		return user;
 	}
-	
+
 	/**
-	 * Gets command-line prompts from the user (username, password) and searches the database.
-	 * Checks if inputs exist and determines authentication.
-	 * If authenticated, returns a new user with unique id and given parameters.
+	 * Gets command-line prompts from the user (username, password) and searches the
+	 * database. Checks if inputs exist and determines authentication. If
+	 * authenticated, returns a new user with unique id and given parameters.
 	 *
 	 * @return User that mirrors database entry.
 	 */
@@ -56,25 +61,25 @@ public class Authentication {
 		User user = null;
 		boolean done = false;
 		int tempid = -1;
-		while(!done) {
+		while (!done) {
 			boolean exists = false;
 			System.out.print("\nUsername: ");
 			String un = scan.nextLine();
 			Object[] keys = db.getKeys().toArray();
-			for(int i = 0; i<keys.length; i++) {
-				Object[] names = db.get((int)keys[i]).toArray();
-				if(names[0].toString().equals(un)) {
+			for (int i = 0; i < keys.length; i++) {
+				Object[] names = db.get((int) keys[i]).toArray();
+				if (names[0].toString().equals(un)) {
 					exists = true;
-					tempid = (int)keys[i];
+					tempid = (int) keys[i];
 				}
 			}
-			if(exists) {
+			if (exists) {
 				boolean valid = false;
-				while(!valid) {
+				while (!valid) {
 					System.out.print("Password: ");
 					String p = scan.nextLine();
 					Object[] names = db.get(tempid).toArray();
-					if(names[1].toString().equals(p)) {	
+					if (names[1].toString().equals(p)) {
 						user = new User(keys.length, un, p);
 						System.out.println("\nLogging you in...\n");
 						valid = true;
@@ -89,11 +94,11 @@ public class Authentication {
 		}
 		return user;
 	}
-	
+
 	/**
-	 * Gets command-line prompts from the user(username, password) and updates the database.
-	 * Checks if inputs are unique.
-	 * If unique, returns a new user with unique id and given parameters.
+	 * Gets command-line prompts from the user(username, password) and updates the
+	 * database. Checks if inputs are unique. If unique, returns a new user with
+	 * unique id and given parameters.
 	 *
 	 * @return User that mirrors database entry.
 	 */
@@ -101,21 +106,21 @@ public class Authentication {
 		User user = null;
 		boolean done = false;
 		System.out.println("\nRegistering new user...");
-		while(!done) {
+		while (!done) {
 			boolean valid = true;
 			System.out.print("\nUsername: ");
 			String un = scan.nextLine();
 			Object[] keys = db.getKeys().toArray();
-			for(int i = 0; i<keys.length; i++) {
-				Object[] names = db.get((int)keys[i]).toArray();
-				if(names[0].toString().equals(un))
+			for (int i = 0; i < keys.length; i++) {
+				Object[] names = db.get((int) keys[i]).toArray();
+				if (names[0].toString().equals(un))
 					valid = false;
 			}
-			if(valid) {
+			if (valid) {
 				System.out.print("Password: ");
 				String p = scan.nextLine();
 				ArrayList<Object> al = new ArrayList<Object>();
-				if(keys.length==0)
+				if (keys.length == 0)
 					al.add(0);
 				else
 					al.add(keys.length);

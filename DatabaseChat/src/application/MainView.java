@@ -15,20 +15,22 @@ public class MainView {
 	DatabaseAccessor authenticationAccessor;
 	DatabaseAccessor roomInfoAccessor;
 	DatabaseAccessor historyAccessor;
+	DatabaseAccessor usersAccessor;
 	Scanner input;
 	
 	boolean leaving;
 	
 	public MainView(User user, DatabaseAccessor authenticationAccessor, 
-			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, Scanner input)
+			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, DatabaseAccessor usersAccessor, Scanner input)
 	{
 		
-		user = this.user;
-		authenticationAccessor = this.authenticationAccessor;
-		roomInfoAccessor = this.roomInfoAccessor;
-		historyAccessor = this.historyAccessor;
-		input = this.input;
-		leaving = false;
+		this.user = user;
+		this.authenticationAccessor = authenticationAccessor;
+		this.roomInfoAccessor = roomInfoAccessor;
+		this.historyAccessor = historyAccessor;
+		this.usersAccessor = usersAccessor;
+		this.input = input;
+		this.leaving = false;
 		
 	}
 	
@@ -99,13 +101,22 @@ public class MainView {
 			else { 
 				//valid room name! create room and enter
 				valid = true;
-				ChatRoom room = new ChatRoom(user, name, roomInfoAccessor.getKeys().size(), roomInfoAccessor, historyAccessor, input);
-				ArrayList<Object> entry = new ArrayList<>();
-				entry.add(roomInfoAccessor.getKeys().size());
-				entry.add(name);
-				entry.add(user.getUsername());
+				ChatRoom room = new ChatRoom(user, name, roomInfoAccessor.getKeys().size(), roomInfoAccessor, 
+						historyAccessor, usersAccessor, input);
 				
-				roomInfoAccessor.add(entry);
+				//update chat_room table
+				ArrayList<Object> roomEntry = new ArrayList<>();
+				roomEntry.add(roomInfoAccessor.getKeys().size());
+				roomEntry.add(name);
+				
+				roomInfoAccessor.add(roomEntry);
+				
+				//update chat_users table
+				ArrayList<Object> userEntry = new ArrayList<>();
+				userEntry.add(usersAccessor.getKeys().size());
+				userEntry.add(user.getUsername());
+				
+				usersAccessor.add(userEntry);
 				
 				System.out.println("Room " + name + " created!");
 				String msg = "";
@@ -159,7 +170,16 @@ public class MainView {
 				//valid room name! join room
 				valid = true;
 				ChatRoom room = new ChatRoom(user, name, index, 
-						roomInfoAccessor, historyAccessor, input);
+						roomInfoAccessor, historyAccessor, usersAccessor, input);
+				
+				//update chat_users table
+				ArrayList<Object> userEntry = new ArrayList<>();
+				userEntry.add(usersAccessor.getKeys().size());
+				userEntry.add(user.getUsername());
+				
+				usersAccessor.add(userEntry);
+				
+				
 				System.out.println("Room " + name + " joined!");
 				String msg = "";
 				while(!leaving) {

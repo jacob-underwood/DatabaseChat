@@ -61,14 +61,18 @@ public class Main {
 				stmt.close();
 
 				stmt = c.createStatement();
-				sql = "CREATE TABLE chat_room " + "(room_id INT PRIMARY KEY NOT NULL," + " name TEXT NOT NULL,"
-						+ " users TEXT[] NOT NULL);";
+				sql = "CREATE TABLE chat_room " + "(id INT PRIMARY KEY NOT NULL," + " name TEXT NOT NULL);";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
 				stmt = c.createStatement();
-				sql = "CREATE TABLE chat_history " + "(chat_id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL,"
+				sql = "CREATE TABLE chat_history " + "(id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL,"
 						+ " chat TEXT NOT NULL);";
+				stmt.executeUpdate(sql);
+				stmt.close();
+				
+				stmt = c.createStatement();
+				sql = "CREATE TABLE chat_users " + "(id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL);";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
@@ -83,15 +87,18 @@ public class Main {
 		DatabaseAccessor authenticationAccessor = new DatabaseAccessor(c, "authentication");
 		DatabaseAccessor chatAccessor = new DatabaseAccessor(c, "chat_room");
 		DatabaseAccessor historyAccessor = new DatabaseAccessor(c, "chat_history");
+		DatabaseAccessor usersAccessor = new DatabaseAccessor(c, "chat_users");
 
 		// BELOW NEEDS UPDATING WITH FINISHED IMPLEMENTATION OF MainView AND POSSIBLY
 		// ChatRoom.
 
-//		Authentication authenticationScreen = new Authentication(authenticationAccessor);
-//		
-//		User user = authenticationScreen.authScreen();
-//		
-//		MainView mainScreen = new MainView();
+		Authentication authenticationScreen = new Authentication(authenticationAccessor, scan);
+		
+		User user = authenticationScreen.authScreen();
+		
+		MainView mainScreen = new MainView(user, authenticationAccessor, chatAccessor, historyAccessor, usersAccessor, scan);
+		
+		mainScreen.execute();
 
 		try {
 			c.close();

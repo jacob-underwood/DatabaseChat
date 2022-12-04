@@ -17,22 +17,21 @@ public class ChatRoom {
 	int roomId;
 	DatabaseAccessor roomInfoAccessor;
 	DatabaseAccessor historyAccessor;
+	DatabaseAccessor usersAccessor;
 	Scanner input;
-	ArrayList<Object> userList = new ArrayList<>();
 	
 	boolean leaving = false;
 	
 	public ChatRoom(User user, String roomName, int roomId, 
-			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, Scanner input) {
+			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, DatabaseAccessor usersAccessor, Scanner input) {
 
-		user = this.user;
-		roomName = this.roomName;
-		roomId = this.roomId;
-		roomInfoAccessor = this.roomInfoAccessor;
-		historyAccessor = this.historyAccessor;
-		input = this.input;
-		
-		userList = roomInfoAccessor.get(2);
+		this.user = user;
+		this.roomName = roomName;
+		this.roomId = roomId;
+		this.roomInfoAccessor = roomInfoAccessor;
+		this.historyAccessor = historyAccessor;
+		this.usersAccessor = usersAccessor;
+		this.input = input;
 		
 	}
 		
@@ -66,11 +65,14 @@ public class ChatRoom {
 		System.out.println("Users in chatroom " + roomName + " : ");
 		
 		ArrayList<Integer> keys = roomInfoAccessor.getKeys();
-		userList = roomInfoAccessor.get(2);
 		
-		for(int i = 0; i < userList.size(); i++)
+		for(int i = 0; i < usersAccessor.getKeys().size(); i++)
 		{
-			System.out.println(i+1 + ". " + userList.get(i));
+			if(usersAccessor.get(i).get(1).equals(roomId)) {
+				
+				System.out.println(i+1 + ". " + usersAccessor.get(i).get(1));
+				
+			}
 		}
 		
 	}
@@ -83,8 +85,7 @@ public class ChatRoom {
 		System.out.println("Leaving chatroom.");
 		
 		leaving = true;
-		userList.remove(userList.indexOf(user.getUsername()));
-		roomInfoAccessor.update(roomId, "USERS", userList);
+		usersAccessor.delete(user.getId());
 		
 	}
 	

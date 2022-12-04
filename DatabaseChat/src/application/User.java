@@ -68,4 +68,11 @@ public class User {
 		this.password = password;
 	}
 	
+	/**
+	 * Returns user information in String form.
+	 */
+	public String toString() {
+		return "ID: " + id + ", Username: " + username + ", Password: " + password;
+	}
+	
 }
