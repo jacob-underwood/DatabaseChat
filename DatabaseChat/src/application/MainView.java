@@ -113,8 +113,8 @@ public class MainView {
 				
 				//update chat_users table
 				ArrayList<Object> userEntry = new ArrayList<>();
+				userEntry.add(user.getId());
 				userEntry.add(usersAccessor.getKeys().size());
-				userEntry.add(user.getUsername());
 				
 				usersAccessor.add(userEntry);
 				
@@ -123,8 +123,8 @@ public class MainView {
 				while(!room.leaving()) {
 					
 					System.out.print(user.getUsername() + ": ");
-					msg = input.next();
-					room.sendChat(user.getUsername() + ": " + msg);
+					msg = input.nextLine();
+					room.sendChat(msg);
 					
 				}
 			}
@@ -174,8 +174,8 @@ public class MainView {
 				
 				//update chat_users table
 				ArrayList<Object> userEntry = new ArrayList<>();
+				userEntry.add(user.getId());
 				userEntry.add(usersAccessor.getKeys().size());
-				userEntry.add(user.getUsername());
 				
 				usersAccessor.add(userEntry);
 				
@@ -184,9 +184,11 @@ public class MainView {
 				String msg = "";
 				while(!leaving) {
 					
-					System.out.print(user.getUsername() + ": ");
-					msg = input.next();
-					room.sendChat(user.getUsername() + ": " + msg);
+					System.out.println(user.getUsername() + ": ");
+					msg = input.nextLine();
+					room.sendChat(msg);
+					
+					System.out.println("Message: " + msg);
 					
 				}
 			}
@@ -216,9 +218,9 @@ public class MainView {
 			name = input.nextLine();
 			taken = false;
 			
-			for(int i = 0; i < roomInfoAccessor.getKeys().size(); i++) {
+			for(int i = 0; i < authenticationAccessor.getKeys().size(); i++) {
 				
-				if(roomInfoAccessor.get(i).get(1).equals(name)) {
+				if(authenticationAccessor.get(i).get(1).equals(name)) {
 					
 					taken = true;
 					

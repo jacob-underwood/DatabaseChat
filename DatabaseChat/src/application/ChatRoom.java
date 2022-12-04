@@ -54,6 +54,7 @@ public class ChatRoom {
 			help();
 		else
 			System.out.println("Invalid command! Type /help to see available commands.");
+		System.out.println();
 			
 	}
 	
@@ -129,11 +130,13 @@ public class ChatRoom {
 	 */
 	private void help() {
 		
+		System.out.println();
 		System.out.println("Available commands :");
 		System.out.println("/list - Prints the list of users currently in this chat room.");
 		System.out.println("/leave - Exit the chat room.");
 		System.out.println("/history - Print all past messages for this room.");
 		System.out.println("/help for help.");
+		System.out.println();
 	}
 	
 	/**
@@ -143,10 +146,8 @@ public class ChatRoom {
 	 */
 	public void sendChat(String msg) {
 		
-		System.out.print(msg);
-		
 		if(msg.substring(0,1).equals("/"))
-			parseCommand(msg);
+			parseCommand(msg.trim());
 		
 		update(msg);
 	}
@@ -155,13 +156,12 @@ public class ChatRoom {
 	 * Updates chat history view for other user activity.
 	 */
 	public void update(String msg) {
-		
 		ArrayList<Object> entry = new ArrayList<>();
 		int chatId = historyAccessor.getKeys().size();
 		
 		entry.add(chatId);
 		entry.add(roomId);
-		entry.add(msg);
+		entry.add(user.getUsername() + ": " + msg);
 		
 		historyAccessor.add(entry);
 		
