@@ -18,7 +18,8 @@ public class MainView {
 	DatabaseAccessor usersAccessor;
 	Scanner input;
 	
-	boolean leaving;
+	boolean leavingRoom;
+	boolean leavingMain;
 	
 	public MainView(User user, DatabaseAccessor authenticationAccessor, 
 			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, DatabaseAccessor usersAccessor, Scanner input)
@@ -30,22 +31,23 @@ public class MainView {
 		this.historyAccessor = historyAccessor;
 		this.usersAccessor = usersAccessor;
 		this.input = input;
-		this.leaving = false;
+		this.leavingRoom = false;
+		this.leavingMain = false;
 		
 	}
 	
 	public void execute() {
 		
-		System.out.println("Welcome, " + user.getUsername() + "!");
-		System.out.println("Type /create to create a chat room");
-		System.out.println("/join to join a chat room");
-		System.out.println("/updatename to update your username");
-		System.out.println("/updatepass to update your password");
-		System.out.println("/logout to log out");
-		
 		String entry = "";
 		
-		while(!leaving) {
+		while(!leavingMain) {
+			
+			leavingMain = false;
+			System.out.println("\nType /create to create a chat room");
+			System.out.println("/join to join a chat room");
+			System.out.println("/updatename to update your username");
+			System.out.println("/updatepass to update your password");
+			System.out.println("/logout to log out\n");
 			
 			entry = input.nextLine();
 			if(entry.equals("/create")) {
@@ -62,6 +64,9 @@ public class MainView {
 			}
 			else if(entry.equals("/logout")) {
 				logout();
+			}
+			else {
+				System.out.println("\nInvalid: Unknown command.\n");
 			}
 		}
 		
@@ -80,7 +85,7 @@ public class MainView {
 		boolean taken = false;
 		
 		while(!valid) {
-			System.out.println("Enter a name for your chat room or type /exit to return to Main View : ");
+			System.out.println("\nEnter a name for your chat room or type /exit to return to Main View : ");
 			name = input.nextLine();
 			taken = false;
 			
@@ -97,10 +102,11 @@ public class MainView {
 			if(name.equals("/exit")) //exit to main view
 				valid = true;
 			else if(taken) //name is taken
-				System.out.println("A room already exists with that name. Please enter another.");
+				System.out.println("\nA room already exists with that name. Please enter another.");
 			else { 
 				//valid room name! create room and enter
 				valid = true;
+				
 				ChatRoom room = new ChatRoom(user, name, roomInfoAccessor.getKeys().size(), roomInfoAccessor, 
 						historyAccessor, usersAccessor, input);
 				
@@ -118,19 +124,10 @@ public class MainView {
 				
 				usersAccessor.add(userEntry);
 				
-				System.out.println("Room " + name + " created!");
-				String msg = "";
-				while(!room.leaving()) {
-					
-					System.out.print(user.getUsername() + ": ");
-					msg = input.nextLine();
-					room.sendChat(msg);
-					
-				}
+				System.out.println("\nRoom " + name + " created!\n");
+				beginChatting(room, name);
 			}
 		}
-		
-		System.out.println("Returning to Main View.");
 		
 	}
 
@@ -146,7 +143,7 @@ public class MainView {
 		boolean exists = false;
 		
 		while(!valid) {
-			System.out.println("Enter the name of the room or type /exit to return to Main View : ");
+			System.out.println("\nEnter the name of the room or type /exit to return to Main View : ");
 			name = input.nextLine();
 			exists = false;
 			int index = 0;
@@ -165,7 +162,7 @@ public class MainView {
 			if(name.equals("/exit")) //exit to main view
 				valid = true;
 			else if(!exists) //name is taken
-				System.out.println("No room exists with that name. Please enter another.");
+				System.out.println("\nNo room exists with that name. Please enter another.");
 			else { 
 				//valid room name! join room
 				valid = true;
@@ -180,21 +177,36 @@ public class MainView {
 				usersAccessor.add(userEntry);
 				
 				
-				System.out.println("Room " + name + " joined!");
-				String msg = "";
-				while(!leaving) {
-					
-					System.out.println(user.getUsername() + ": ");
-					msg = input.nextLine();
-					room.sendChat(msg);
-					
-					System.out.println("Message: " + msg);
-					
-				}
+				System.out.println("\nRoom " + name + " joined!\n");
+				beginChatting(room, name);
 			}
 		}
 		
-		System.out.println("Returning to Main View.");
+	}
+	
+	public void beginChatting(ChatRoom room, String name) {
+		
+		leavingRoom = false;
+		String msg = "";
+		while(!leavingRoom) {
+			
+			//System.out.println("last index (+1): " + room.lastChatIndex() + "size (-1): "+ historyAccessor.getKeys().size());
+			for(int i = room.lastChatIndex() + 1; i < historyAccessor.getKeys().size()-1; i++) {
+				
+				//if(!user.getUsername().equals(historyAccessor.get(i).get(2).substring(0,user.getUsername().length())))
+					System.out.println(historyAccessor.get(i).get(2));
+				//System.out.println("i: " + i + " - I checked!");
+			}
+			
+			System.out.print(user.getUsername() + ": ");
+			msg = input.nextLine();
+			room.sendChat(msg);
+			
+			leavingRoom = room.leaving();
+			
+		}
+		
+		System.out.println("\nReturning to Main View...\n");
 		
 	}
 
@@ -214,7 +226,7 @@ public class MainView {
 		
 		while(!valid) {
 			
-			System.out.println("Enter a new username : ");
+			System.out.println("\nEnter a new username : ");
 			name = input.nextLine();
 			taken = false;
 			
@@ -231,17 +243,17 @@ public class MainView {
 			if(name.equals("/exit")) //exit to main view
 				valid = true;
 			else if(taken) //name is taken
-				System.out.println("A user already exists with that name. Please enter another: ");
+				System.out.println("\nA user already exists with that name. Please enter another: ");
 			else { 
 				//valid user name! update name
 				valid = true;
 				updated = authenticationAccessor.update(user.getId(), "USERNAME", name);
-				System.out.println("Password updated.");
+				System.out.println("\nUsername updated.\n");
 					
 				}
 			}
 		
-		System.out.println("Returning to Main View.");
+		System.out.println("Returning to Main View...");
 		
 	}
 
@@ -259,23 +271,23 @@ public class MainView {
 		
 		while(!valid) {
 			
-			System.out.println("Enter your new password or type /exit to return to Main View: ");
+			System.out.println("\nEnter your new password or type /exit to return to Main View: ");
 			pass = input.nextLine();
 			
 			if(pass.equals("/exit")) //exit to main view
 				valid = true;
 			else if(pass.equals("")) //no pass entered
-				System.out.println("You cannot have a blank password.");
+				System.out.println("\nYou cannot have a blank password.\n");
 			else { 
 				//valid! update pass
 				valid = true;
 				
 				updated = authenticationAccessor.update(user.getId(), "PASSWORD", pass);
-				System.out.println("Password updated.");
+				System.out.println("\nPassword updated.\n");
 				}
 			}
 		
-		System.out.println("Returning to Main View.");
+		System.out.println("\nReturning to Main View...\n");
 		
 	}
 
@@ -284,14 +296,14 @@ public class MainView {
 	 */
 	public void logout() {
 		
-		leaving = true;
-		System.out.println("Logged out. Returning to authentication.");
+		leavingMain = true;
+		System.out.println("\nLogged out. Returning to authentication...\n");
 		
 	}
 	
 	public boolean leaving() {
 		
-		return leaving;
+		return leavingMain;
 		
 	}
 
