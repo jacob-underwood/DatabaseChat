@@ -15,14 +15,15 @@ public class ChatRoom {
 	User user;
 	String roomName;
 	int roomId;
-	ArrayList<User> users = new ArrayList<>();
 	DatabaseAccessor roomInfoAccessor;
 	DatabaseAccessor historyAccessor;
 	Scanner input;
+	ArrayList<String> userList = new ArrayList<>();
 	
 	boolean leaving = false;
 	
-	public ChatRoom(User user, String roomName, int roomId, DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, Scanner input) {
+	public ChatRoom(User user, String roomName, int roomId, 
+			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, Scanner input) {
 
 		user = this.user;
 		roomName = this.roomName;
@@ -30,6 +31,8 @@ public class ChatRoom {
 		roomInfoAccessor = this.roomInfoAccessor;
 		historyAccessor = this.historyAccessor;
 		input = this.input;
+		
+		userList = roomInfoAccessor.get(roomId).get(2);
 		
 	}
 		
@@ -62,7 +65,8 @@ public class ChatRoom {
 		
 		System.out.println("Users in chatroom " + roomName + " : ");
 		
-		ArrayList<Integer> userList = 
+		ArrayList<String> keys = roomInfoAccessor.getKeys();
+		userList = roomInfoAccessor.get(roomId).get(2);
 		
 		for(int i = 0; i < userList.size(); i++)
 		{
@@ -79,7 +83,15 @@ public class ChatRoom {
 		System.out.println("Leaving chatroom.");
 		
 		leaving = true;
-		roomInfoAccessor.delete(user.getId());
+		userList.remove(userList.indexOf(user.getUsername()));
+		roomInfoAccessor.update(roomId, "USERS", userList);
+		
+	}
+	
+	
+	public boolean leaving() {
+		
+		return leaving;
 		
 	}
 
@@ -90,15 +102,22 @@ public class ChatRoom {
 		
 		System.out.println("Displaying history for chatroom" + roomName);
 		
-		if(historyAccessor.getKeys().size() == 0) {
-			
-			System.out.println("No chat history!");
-			
-		}
+		boolean historyExists = false;
 		
 		for(int i = 0; i < historyAccessor.getKeys().size(); i++) {
 			
-			historyAccessor.get(i)
+			if(historyAccessor.get(i).get(1).equals(roomName)) {
+			
+				System.out.println(historyAccessor.get(i).get(2));
+				historyExists = true;
+				
+			}
+			
+		}
+		
+		if(!historyExists) {
+			
+			System.out.println("No history exists for this room.");
 			
 		}
 		
@@ -136,10 +155,12 @@ public class ChatRoom {
 	 */
 	public void update(String msg) {
 		
-		ArrayList<Integer> entry = new ArrayList<>();
+		ArrayList<Object> entry = new ArrayList<>();
 		int chatId = historyAccessor.getKeys().size();
 		
-		entry.add(chatId, roomId, msg);
+		entry.add(chatId);
+		entry.add(roomId);
+		entry.add(msg);
 		
 		historyAccessor.add(entry);
 		
