@@ -18,7 +18,9 @@ public class User {
 	 * @param password
 	 */
 	public User(int id, String username, String password) {
-		
+		this.id = id;
+		this.username = username;
+		this.password = password;
 	}
 	
 	/**
@@ -27,7 +29,7 @@ public class User {
 	 * @return int that represents user ID.
 	 */
 	public int getId() {
-		return -1;
+		return id;
 	}
 	
 	/**
@@ -36,7 +38,7 @@ public class User {
 	 * @return String that represents username.
 	 */
 	public String getUsername() {
-		return "";
+		return username;
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class User {
 	 * @param username
 	 */
 	public void setUsername(String username) {
-		
+		this.username = username;
 	}
 	
 	/**
@@ -54,7 +56,7 @@ public class User {
 	 * @return String that represents user password.
 	 */
 	public String getPassword() {
-		return "";
+		return password;
 	}
 	
 	/**
@@ -63,7 +65,7 @@ public class User {
 	 * @param password
 	 */
 	public void setPassword(String password) {
-		
+		this.password = password;
 	}
 	
 }
