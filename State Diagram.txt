@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Authentication
+    Authentication --> Login
+    Authentication --> Register
+    Register --> Authentication
+    Login --> Authentication
+    Login --> Main
+    Register --> Main
+    Main --> Authentication
+    Main --> Room
+    Room --> Main
+    Main --> [*]
+    Authentication --> [*]
