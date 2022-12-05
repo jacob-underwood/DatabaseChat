@@ -86,7 +86,6 @@ public class Authentication {
 
 		User user = null;
 		boolean done = false;
-		int tempid = -1;
 
 		while (!done) {
 
@@ -107,7 +106,6 @@ public class Authentication {
 				if (db.get(i).get(1).equals(un)) {
 
 					exists = true;
-					tempid = (int) keys[i];
 					userId = i;
 
 				}
@@ -120,7 +118,6 @@ public class Authentication {
 
 					System.out.print("Password or /exit to leave: ");
 					String p = scan.nextLine();
-					Object[] names = db.get(tempid).toArray();
 					
 					if (p.equals("/exit")) {
 

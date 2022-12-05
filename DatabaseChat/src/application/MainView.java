@@ -233,9 +233,6 @@ public class MainView {
 		boolean valid = false;
 		boolean taken = false;
 		
-		boolean updated = false;
-		int id = -1;
-		
 		String name = "";
 		
 		while(!valid) {
@@ -262,7 +259,7 @@ public class MainView {
 				//valid user name! update name
 				valid = true;
 				
-				updated = authenticationAccessor.update(user.getId(), "USERNAME", name);
+				authenticationAccessor.update(user.getId(), "USERNAME", name);
 				System.out.println("\nUsername updated.\n");
 					
 				}
@@ -280,8 +277,6 @@ public class MainView {
 		boolean valid = false;
 		String pass = "";
 		
-		boolean updated = false;
-		
 		while(!valid) {
 			
 			System.out.println("\nEnter your new password or type /exit to return to Main View: ");
@@ -295,7 +290,7 @@ public class MainView {
 				//valid! update pass
 				valid = true;
 				
-				updated = authenticationAccessor.update(user.getId(), "PASSWORD", pass);
+				authenticationAccessor.update(user.getId(), "PASSWORD", pass);
 				System.out.println("\nPassword updated.\n");
 				}
 			}
