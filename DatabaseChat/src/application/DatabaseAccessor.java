@@ -44,7 +44,10 @@ public class DatabaseAccessor {
 		// command. Other data types should have nothing.
 		for (Object val : vals) {
 			if (val.getClass().equals(String.class)) {
-				valsStr += "'" + val.toString() + "', ";
+				// Escape dollar signs
+				val = val.toString().replaceAll("\\$", "\\\\\\$");
+				
+				valsStr += "$$" + val + "$$, ";
 			} else {
 				valsStr += val.toString() + ", ";
 			}
@@ -125,6 +128,14 @@ public class DatabaseAccessor {
 			System.err.print(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
+		
+		for (int i = 0; i < vals.size(); i++) {
+			if (vals.get(i).getClass().equals(String.class)) {
+				String valStr = (String) vals.get(i);
+				valStr = valStr.replaceAll("\\\\\\$", "\\$");
+				vals.set(i, valStr);
+			}
+		}
 
 		return vals;
 	}
@@ -175,7 +186,10 @@ public class DatabaseAccessor {
 		// Strings in the ArrayList should have '' around them when put into the SQL
 		// command. Other data types should have nothing.
 		if (val.getClass().equals(String.class)) {
-			valStr += "'" + val.toString() + "'";
+			// Escape dollar signs.
+			val = val.toString().replaceAll("\\$", "\\\\\\$");
+			
+			valStr += "$$" + val + "$$";
 		} else {
 			valStr += val.toString();
 		}

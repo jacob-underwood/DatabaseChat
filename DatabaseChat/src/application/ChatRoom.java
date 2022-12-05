@@ -12,6 +12,7 @@ public class ChatRoom {
 	User user;
 	String roomName;
 	int roomId;
+	DatabaseAccessor authenticationAccessor;
 	DatabaseAccessor roomInfoAccessor;
 	DatabaseAccessor historyAccessor;
 	DatabaseAccessor usersAccessor;
@@ -21,12 +22,22 @@ public class ChatRoom {
 	int lastChatIndex;
 	int currentChatIndex;
 
-	public ChatRoom(User user, String roomName, int roomId, DatabaseAccessor roomInfoAccessor,
+	/**
+	 * @param user User object that dictates who is using the application.
+	 * @param roomName Name of the chat room.
+	 * @param roomId Id for this chat room.
+	 * @param roomInfoAccessor Accessor to chat_room table.
+	 * @param historyAccessor Accessor to chat_history table.
+	 * @param usersAccessor Accessor to chat_users table.
+	 * @param input Shared scanner between classes.
+	 */
+	public ChatRoom(User user, String roomName, int roomId, DatabaseAccessor authenticationAccessor, DatabaseAccessor roomInfoAccessor,
 			DatabaseAccessor historyAccessor, DatabaseAccessor usersAccessor, Scanner input) {
 
 		this.user = user;
 		this.roomName = roomName;
 		this.roomId = roomId;
+		this.authenticationAccessor = authenticationAccessor;
 		this.roomInfoAccessor = roomInfoAccessor;
 		this.historyAccessor = historyAccessor;
 		this.usersAccessor = usersAccessor;
@@ -73,13 +84,16 @@ public class ChatRoom {
 	 * Prints list of users currently in chat room.
 	 */
 	private void list() {
-
+		
+		int counter = 0;
 		System.out.println("\nUsers in chatroom " + roomName + " : \n");
 
-		for (int i = 0; i < usersAccessor.getKeys().size(); i++) {
-			if (usersAccessor.get(i).get(1).equals(roomId)) {
-
-				System.out.println(i + 1 + ". " + usersAccessor.get(i).get(1));
+		for (int userId : usersAccessor.getKeys()) {
+			
+			if (usersAccessor.get(userId).get(1).equals(roomId)) {
+				
+				counter++;
+				System.out.println(counter  + ". " + authenticationAccessor.get(userId).get(1));
 
 			}
 		}
@@ -98,6 +112,9 @@ public class ChatRoom {
 
 	}
 
+	/**
+	 * @return Boolean that updates whether or not the room should be exited.
+	 */
 	public boolean leaving() {
 
 		return leaving;
@@ -166,6 +183,7 @@ public class ChatRoom {
 
 	/**
 	 * Updates chat history view for other user activity.
+	 * @param msg Text entered by user, to be entered into the chat_history table.
 	 */
 	public void update(String msg) {
 		ArrayList<Object> entry = new ArrayList<>();
@@ -179,9 +197,18 @@ public class ChatRoom {
 
 	}
 
+	/**
+	 * @return Index of the last chat the user sent.
+	 */
 	public int lastChatIndex() {
 
 		return lastChatIndex;
 
+	}
+	
+	public int getRoomId() {
+		
+		return roomId;
+		
 	}
 }

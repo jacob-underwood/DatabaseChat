@@ -13,16 +13,16 @@ public class Main {
 	public static void main(String[] args) {
 		// Scanner
 		// TODO: Pass this Scanner in to other classes.
-		
+
 		Scanner scan = null;
-		
+
 		try {
 			scan = new Scanner(System.in);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.print("Enter PostgreSQL password: ");
-		String databasePass = scan.next();
+		String databasePass = scan.nextLine();
 
 		// Create Connection to database.
 
@@ -69,7 +69,7 @@ public class Main {
 						+ " chat TEXT NOT NULL);";
 				stmt.executeUpdate(sql);
 				stmt.close();
-				
+
 				stmt = c.createStatement();
 				sql = "CREATE TABLE chat_users " + "(id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL);";
 				stmt.executeUpdate(sql);
@@ -88,23 +88,31 @@ public class Main {
 		DatabaseAccessor historyAccessor = new DatabaseAccessor(c, "chat_history");
 		DatabaseAccessor usersAccessor = new DatabaseAccessor(c, "chat_users");
 
-		// BELOW NEEDS UPDATING WITH FINISHED IMPLEMENTATION OF MainView AND POSSIBLY
-		// ChatRoom.
-
 		Authentication authenticationScreen = new Authentication(authenticationAccessor, scan);
-		
+
 		User user = authenticationScreen.authScreen();
-		
-		MainView mainScreen = new MainView(user, authenticationAccessor, chatAccessor, historyAccessor, usersAccessor, scan);
-		
-		mainScreen.execute();
+
+		if (user != null) {
+
+			MainView mainScreen = new MainView(user, authenticationAccessor, chatAccessor, historyAccessor,
+					usersAccessor, scan);
+
+			do {
+
+				mainScreen.execute(user);
+
+				user = authenticationScreen.authScreen();
+
+			} while (user != null);
+
+		}
 
 		try {
 			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-    
+
 	}
 
 }

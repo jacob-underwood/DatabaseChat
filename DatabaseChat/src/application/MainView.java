@@ -21,6 +21,14 @@ public class MainView {
 	boolean leavingRoom;
 	boolean leavingMain;
 	
+	/**
+	 * @param user User object that dictates who is using the application.
+	 * @param authenticationAccessor Accessor to authentication table.
+	 * @param roomInfoAccessor Accessor to chat_room table.
+	 * @param historyAccessor Accessor to chat_history table.
+	 * @param usersAccessor Accessor to chat_users table.
+	 * @param input Shared scanner between classes.
+	 */
 	public MainView(User user, DatabaseAccessor authenticationAccessor, 
 			DatabaseAccessor roomInfoAccessor, DatabaseAccessor historyAccessor, DatabaseAccessor usersAccessor, Scanner input)
 	{
@@ -36,9 +44,14 @@ public class MainView {
 		
 	}
 	
-	public void execute() {
-		
+	/**
+	 * Handles user input and executes appropriate MainView commands.
+	 * @param user User object using the this MainView.
+	 */
+	public void execute(User user) {
+		leavingMain = false;
 		String entry = "";
+		this.user = user;
 		
 		while(!leavingMain) {
 			
@@ -107,7 +120,7 @@ public class MainView {
 				//valid room name! create room and enter
 				valid = true;
 				
-				ChatRoom room = new ChatRoom(user, name, roomInfoAccessor.getKeys().size(), roomInfoAccessor, 
+				ChatRoom room = new ChatRoom(user, name, roomInfoAccessor.getKeys().size(), authenticationAccessor, roomInfoAccessor, 
 						historyAccessor, usersAccessor, input);
 				
 				//update chat_room table
@@ -120,7 +133,7 @@ public class MainView {
 				//update chat_users table
 				ArrayList<Object> userEntry = new ArrayList<>();
 				userEntry.add(user.getId());
-				userEntry.add(usersAccessor.getKeys().size());
+				userEntry.add(room.getRoomId());
 				
 				usersAccessor.add(userEntry);
 				
@@ -133,8 +146,6 @@ public class MainView {
 
 	/**
 	 * Adds user to existing chat room. Displays error if room does not exist.
-	 * 
-	 * @param rName The name of the room to be joined.
 	 */
 	public void joinRoom() {
 		
@@ -166,13 +177,13 @@ public class MainView {
 			else { 
 				//valid room name! join room
 				valid = true;
-				ChatRoom room = new ChatRoom(user, name, index, 
+				ChatRoom room = new ChatRoom(user, name, index, authenticationAccessor,
 						roomInfoAccessor, historyAccessor, usersAccessor, input);
 				
 				//update chat_users table
 				ArrayList<Object> userEntry = new ArrayList<>();
 				userEntry.add(user.getId());
-				userEntry.add(usersAccessor.getKeys().size());
+				userEntry.add(room.getRoomId());
 				
 				usersAccessor.add(userEntry);
 				
@@ -184,6 +195,10 @@ public class MainView {
 		
 	}
 	
+	/**
+	 * @param room Room object being used.
+	 * @param name Room name entered by user for entry.
+	 */
 	public void beginChatting(ChatRoom room, String name) {
 		
 		leavingRoom = false;
@@ -212,8 +227,6 @@ public class MainView {
 
 	/**
 	 * Updates user name of current user. Displays error if user name already exists.
-	 * 
-	 * @param name The new user name.
 	 */
 	public void updateUser() {
 		
@@ -221,6 +234,7 @@ public class MainView {
 		boolean taken = false;
 		
 		boolean updated = false;
+		int id = -1;
 		
 		String name = "";
 		
@@ -247,6 +261,7 @@ public class MainView {
 			else { 
 				//valid user name! update name
 				valid = true;
+				
 				updated = authenticationAccessor.update(user.getId(), "USERNAME", name);
 				System.out.println("\nUsername updated.\n");
 					
@@ -259,8 +274,6 @@ public class MainView {
 
 	/**
 	 * Updates password of current user.
-	 * 
-	 * @param newPass The new password.
 	 */
 	public void updatePass() {
 		
