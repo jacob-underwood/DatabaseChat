@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -14,16 +13,16 @@ public class Main {
 	public static void main(String[] args) {
 		// Scanner
 		// TODO: Pass this Scanner in to other classes.
-		
+
 		Scanner scan = null;
-		
+
 		try {
 			scan = new Scanner(System.in);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.print("Enter PostgreSQL password: ");
-		String databasePass = scan.next();
+		String databasePass = scan.nextLine();
 
 		// Create Connection to database.
 
@@ -61,14 +60,18 @@ public class Main {
 				stmt.close();
 
 				stmt = c.createStatement();
-				sql = "CREATE TABLE chat_room " + "(room_id INT PRIMARY KEY NOT NULL," + " name TEXT NOT NULL,"
-						+ " users TEXT[] NOT NULL);";
+				sql = "CREATE TABLE chat_room " + "(id INT PRIMARY KEY NOT NULL," + " name TEXT NOT NULL);";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
 				stmt = c.createStatement();
-				sql = "CREATE TABLE chat_history " + "(chat_id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL,"
+				sql = "CREATE TABLE chat_history " + "(id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL,"
 						+ " chat TEXT NOT NULL);";
+				stmt.executeUpdate(sql);
+				stmt.close();
+
+				stmt = c.createStatement();
+				sql = "CREATE TABLE chat_users " + "(id INT PRIMARY KEY NOT NULL," + " room_id INT NOT NULL);";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
@@ -83,22 +86,33 @@ public class Main {
 		DatabaseAccessor authenticationAccessor = new DatabaseAccessor(c, "authentication");
 		DatabaseAccessor chatAccessor = new DatabaseAccessor(c, "chat_room");
 		DatabaseAccessor historyAccessor = new DatabaseAccessor(c, "chat_history");
+		DatabaseAccessor usersAccessor = new DatabaseAccessor(c, "chat_users");
 
-		// BELOW NEEDS UPDATING WITH FINISHED IMPLEMENTATION OF MainView AND POSSIBLY
-		// ChatRoom.
+		Authentication authenticationScreen = new Authentication(authenticationAccessor, scan);
 
-//		Authentication authenticationScreen = new Authentication(authenticationAccessor);
-//		
-//		User user = authenticationScreen.authScreen();
-//		
-//		MainView mainScreen = new MainView();
+		User user = authenticationScreen.authScreen();
+
+		if (user != null) {
+
+			MainView mainScreen = new MainView(user, authenticationAccessor, chatAccessor, historyAccessor,
+					usersAccessor, scan);
+
+			do {
+
+				mainScreen.execute(user);
+
+				user = authenticationScreen.authScreen();
+
+			} while (user != null);
+
+		}
 
 		try {
 			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-    
+
 	}
 
 }
